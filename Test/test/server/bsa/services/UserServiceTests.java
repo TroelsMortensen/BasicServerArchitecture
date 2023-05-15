@@ -1,18 +1,18 @@
 package server.bsa.services;
 
+import bsa.dataaccess.exceptions.DataAccessException;
 import bsa.dataaccess.user.UserDAO;
 import bsa.models.User;
-import bsa.services.UserServiceImpl;
 import bsa.services.UserService;
+import bsa.services.UserServiceImpl;
 import bsa.services.exceptions.DomainLogicException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-//import static org.junit.jupiter.api.Assertions.assertNotNull;
-//import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,13 +49,13 @@ class UserServiceTests {
     public void created_user_has_actual_values_for_username_and_password() {
         // arrange
         String actualUsername = "acb";
-        String actualPassword = "password";
+        String actualPassword = "Password!2";
 
         // act
         userService.create(actualUsername, actualPassword);
 
         // assert
-        User user = userDAO.getSavedUser();
+        User user = userDAO.getFirstUser();
         assertAll(
                 "Grouped assertions",
                 () -> assertEquals(actualUsername, user.getUserName()),
@@ -67,8 +67,8 @@ class UserServiceTests {
     public void should_create_user_with_valid_username() {
         String actualUsername = "abc"; // between [3, 15] characters
 
-        userService.create(actualUsername, "password");
-        User user = userDAO.getSavedUser();
+        userService.create(actualUsername, "Password!2");
+        User user = userDAO.getFirstUser();
         assertEquals(actualUsername, user.getUserName());
     }
 
@@ -76,16 +76,16 @@ class UserServiceTests {
     @ValueSource(strings = {"abc", "abcdeighf", "skldjflskjdfsjk"})
     public void should_create_user_with_valid_username2(String actualUsername) {
 
-        userService.create(actualUsername, "password");
-        User user = userDAO.getSavedUser();
+        userService.create(actualUsername, "Password!2");
+        User user = userDAO.getFirstUser();
         assertEquals(actualUsername, user.getUserName());
     }
 
     @Test
     public void should_fail_user_creation_username_is_null() {
-        assertThrows(DomainLogicException.class, () -> {
-            userService.create(null, "password");
-        });
+        assertThrows(DomainLogicException.class, () ->
+                userService.create(null, "password")
+        );
     }
 
     @ParameterizedTest
@@ -100,15 +100,15 @@ class UserServiceTests {
     public void should_update_password_provided_correct_current_password() {
         // arrange
         UUID id = UUID.randomUUID();
-        String currentPassword = "Password";
-        userDAO.savedUser = new User(id, "Username", currentPassword);
+        String currentPassword = "Password!2";
+        userDAO.savedUsers = new ArrayList<>(List.of(new User(id, "Username", currentPassword)));
 
         // act
-        String updatedPassword = "Whatever";
+        String updatedPassword = "PazSw0rd!2";
         userService.updatePassword(id, updatedPassword, currentPassword);
 
         // assert
-        User savedUser = userDAO.getSavedUser();
+        User savedUser = userDAO.getFirstUser();
         assertEquals(updatedPassword, savedUser.getPassword());
     }
 
@@ -116,14 +116,14 @@ class UserServiceTests {
     public void should_update_username() {
         UUID id = UUID.randomUUID();
         String currentUsername = "Username";
-        userDAO.savedUser = new User(id, currentUsername, "Password");
+        userDAO.savedUsers = new ArrayList<>(List.of(new User(id, currentUsername, "Password")));
 
         // act
         String newUsername = "OtherUsername";
         userService.updateUsername(id, newUsername);
 
         // assert
-        User savedUser = userDAO.getSavedUser();
+        User savedUser = userDAO.getFirstUser();
         assertEquals(newUsername, savedUser.getUserName());
     }
 
@@ -135,7 +135,7 @@ class UserServiceTests {
 
         User actualUser = new User(id, "Username", "Password");
         User user2 = new User(UUID.randomUUID(), newUsername, "Password2");
-        userDAO.savedUsers = Arrays.asList(actualUser, user2);
+        userDAO.savedUsers = List.of(actualUser, user2);
 
         // act
         assertThrows(DomainLogicException.class, () -> {
@@ -144,5 +144,61 @@ class UserServiceTests {
 
     }
 
+    @Test // cannot create user with conflicting username
+    public void should_fail_when_creating_user_with_username_conflict(){
+        // arrange
+        String existingUsername = "Username";
+        User existingUser = new User(UUID.randomUUID(), existingUsername, "Password");
+        userDAO.savedUsers = List.of(existingUser);
 
+        // act
+
+        assertThrows(DomainLogicException.class, () -> {
+            userService.create(existingUsername, "Password!2");
+        });
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "Paswo!2",
+            "Password!",
+            "Password2",
+            "password!2",
+            "PASSWORD!2"
+    })
+    public void should_fail_when_creating_user_with_invalid_password(String password){
+        // arrange
+        String username = "Username";
+
+        // act/assert
+        assertThrows(DomainLogicException.class, () ->{
+            userService.create(username, password);
+        });
+    }
+
+    @Test
+    public void should_delete_user(){
+        // arrange
+        UUID id = UUID.randomUUID();
+        User userToDelete = new User(id, "Username", "Password!2");
+        userDAO.savedUsers = new ArrayList<>(List.of(userToDelete));
+
+        // act
+        userService.delete(id);
+
+        // assert
+        assertTrue(userDAO.savedUsers.isEmpty());
+    }
+
+    @Test
+    public void should_throw_exception_when_deleting_notexisting_user(){
+        UUID actualId = UUID.randomUUID();
+        User userToDelete = new User(UUID.randomUUID(), "Username", "Password!2");
+        userDAO.savedUsers = new ArrayList<>(List.of(userToDelete));
+
+        // act
+        assertThrows(DataAccessException.class, () ->{
+            userService.delete(actualId);
+        });
+    }
 }

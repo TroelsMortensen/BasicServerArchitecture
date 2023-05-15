@@ -28,4 +28,8 @@ public class User {
     public void setUsername(String newUsername) {
         username = newUsername;
     }
+
+    public UUID getId() {
+        return id;
+    }
 }

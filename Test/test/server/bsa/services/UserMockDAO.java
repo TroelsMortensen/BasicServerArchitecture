@@ -1,5 +1,6 @@
 package server.bsa.services;
 
+import bsa.dataaccess.exceptions.DataAccessException;
 import bsa.dataaccess.user.UserDAO;
 import bsa.models.User;
 
@@ -9,32 +10,31 @@ import java.util.UUID;
 
 public class UserMockDAO implements UserDAO {
 
-    public User savedUser;
     public List<User> savedUsers;
-
     public UserMockDAO() {
         savedUsers = new ArrayList<>();
     }
 
-    private boolean createWasCalled;
-    public boolean getCreateWasCalled() {
-        return createWasCalled;
-    }
-
     @Override
     public void create(User user) {
-        createWasCalled = true;
-        savedUser = user;
+        savedUsers.add(user);
     }
 
     @Override
     public User find(UUID id) {
-        return savedUser;
+        for (User user : savedUsers) {
+            if(user.getId().equals(id)) return user;
+        }
+        throw new DataAccessException("User with id " + id + " not found");
     }
 
     @Override
     public void update(User user) {
-        savedUser = user;
+        boolean wasFound = savedUsers.removeIf(u -> u.getId().equals(user.getId()));
+        if(!wasFound){
+            throw new DataAccessException("User with id " + user.getId() + " not found");
+        }
+        savedUsers.add(user);
     }
 
     @Override
@@ -45,7 +45,15 @@ public class UserMockDAO implements UserDAO {
         return null;
     }
 
-    public User getSavedUser() {
-        return savedUser;
+    @Override
+    public void delete(UUID id) {
+        boolean wasFound = savedUsers.removeIf(u -> u.getId().equals(id));
+        if(!wasFound){
+            throw new DataAccessException("User with id " + id + " not found");
+        }
+    }
+
+    public User getFirstUser() {
+        return savedUsers.get(0);
     }
 }

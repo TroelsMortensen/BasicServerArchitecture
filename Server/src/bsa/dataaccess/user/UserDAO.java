@@ -12,4 +12,6 @@ public interface UserDAO {
     void update(User user);
 
     User findByUsername(String username);
+
+    void delete(UUID id);
 }

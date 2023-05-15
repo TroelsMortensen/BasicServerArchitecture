@@ -4,6 +4,7 @@ import bsa.dataaccess.user.UserDAO;
 import bsa.models.User;
 import bsa.services.exceptions.DomainLogicException;
 
+import java.util.List;
 import java.util.UUID;
 
 public class UserServiceImpl implements UserService{
@@ -46,7 +47,6 @@ public class UserServiceImpl implements UserService{
         // verify
         validateUsername(newUsername);
 
-
         // modify
         user.setUsername(newUsername);
 
@@ -54,9 +54,54 @@ public class UserServiceImpl implements UserService{
         userDAO.update(user);
     }
 
+    @Override
+    public void delete(UUID id) {
+        // load ..
+        // verify ..
+
+        // save
+        userDAO.delete(id);
+    }
+
     private void validatePassword(String password) {
         if(password == null || "".equals(password)){
             throw new DomainLogicException("Password cannot be empty");
+        }
+        if(password.length() < 8){
+            throw new DomainLogicException("Password must be at least 8 characters");
+        }
+        boolean hasNumber = false;
+        boolean hasSymbol = false;
+        boolean hasUpperCase = false;
+        boolean hasLowerCase = false;
+        List<Character> necessarySymbols = List.of('!', '_', '-', '?', '+', '#');
+
+        for (char character : password.toCharArray()) {
+            if(Character.isDigit(character)){
+                hasNumber = true;
+            }
+            if(necessarySymbols.contains(character)){
+                hasSymbol = true;
+            }
+            if(Character.isUpperCase(character)){
+                hasUpperCase = true;
+            }
+            if(Character.isLowerCase(character)){
+                hasLowerCase = true;
+            }
+        }
+
+        if(!hasNumber){
+            throw new DomainLogicException("Password must contain at least one number");
+        }
+        if(!hasSymbol){
+            throw new DomainLogicException("Password must contain at least one symbol of ..");
+        }
+        if(!hasUpperCase){
+            throw new DomainLogicException("Password must contain at least one upper case character");
+        }
+        if(!hasLowerCase){
+            throw new DomainLogicException("Password must contain at least one lower case character");
         }
         // at least 1 upper case, lower case, symbol, number
     }
