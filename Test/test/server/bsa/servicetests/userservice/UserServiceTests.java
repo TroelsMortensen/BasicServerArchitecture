@@ -1,4 +1,4 @@
-package server.bsa.services;
+package server.bsa.servicetests.userservice;
 
 import bsa.dataaccess.exceptions.DataAccessException;
 import bsa.dataaccess.user.UserDAO;
@@ -89,7 +89,13 @@ class UserServiceTests {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"", "a", "ab", "adjfskjksjskdjfa", "adjfskjksjskdjfasdfdsffa"})
+    @ValueSource(strings = {
+            "",
+            "a",
+            "ab",
+            "adjfskjksjskdjfa",
+            "adjfskjksjskdjfasdfdsffa"
+    })
     public void should_fail_user_creation_with_invalid_username(String actualUsername) {
         assertThrows(DomainLogicException.class, () -> {
             userService.create(actualUsername, "password");

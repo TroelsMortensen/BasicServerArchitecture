@@ -1,4 +1,4 @@
-package server.bsa.services;
+package server.bsa.servicetests.userservice;
 
 import bsa.dataaccess.exceptions.DataAccessException;
 import bsa.dataaccess.user.UserDAO;
