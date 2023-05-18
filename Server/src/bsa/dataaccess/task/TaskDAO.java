@@ -1,4 +1,4 @@
-package bsa.dataaccess.user;
+package bsa.dataaccess.task;
 
 import bsa.models.Task;
 

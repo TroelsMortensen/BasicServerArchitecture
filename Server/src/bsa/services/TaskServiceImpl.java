@@ -1,6 +1,6 @@
 package bsa.services;
 
-import bsa.dataaccess.user.TaskDAO;
+import bsa.dataaccess.task.TaskDAO;
 import bsa.models.Task;
 import bsa.services.exceptions.DomainLogicException;
 

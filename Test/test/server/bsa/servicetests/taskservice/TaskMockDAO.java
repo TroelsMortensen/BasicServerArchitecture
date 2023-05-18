@@ -1,9 +1,8 @@
 package server.bsa.servicetests.taskservice;
 
 import bsa.dataaccess.exceptions.DataAccessException;
-import bsa.dataaccess.user.TaskDAO;
+import bsa.dataaccess.task.TaskDAO;
 import bsa.models.Task;
-import bsa.models.User;
 
 import java.util.ArrayList;
 import java.util.List;
