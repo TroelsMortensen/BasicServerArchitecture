@@ -15,11 +15,13 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void create(String username, String password) {
+    public UUID create(String username, String password) {
         validateUsername(username);
         validatePassword(password);
-        User user = new User(UUID.randomUUID(), username, password);
+        UUID id = UUID.randomUUID();
+        User user = new User(id, username, password);
         userDAO.create(user);
+        return id;
     }
 
     @Override

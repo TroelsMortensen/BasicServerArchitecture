@@ -4,6 +4,7 @@ import bsa.dataaccess.user.UserPostgresDAO;
 import bsa.models.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.bsa.DatabaseTestUtil;
 
 import java.sql.*;
 import java.util.UUID;
@@ -18,24 +19,15 @@ public class UserDAOtests {
     @BeforeEach
     public void setupDAO() throws SQLException {
         DriverManager.registerDriver(new org.postgresql.Driver());
-        userDAO = new UserPostgresDAO("jdbc:postgresql://localhost:5432/postgres?currentSchema=bsa_test", "postgres", "TroelsDatabase");
+        userDAO = new UserPostgresDAO(DatabaseTestUtil.PGURI, DatabaseTestUtil.USERNAME, DatabaseTestUtil.PASSWORD);
     }
 
     @BeforeEach
     public void cleanupDatabase() throws SQLException {
-        DriverManager.registerDriver(new org.postgresql.Driver());
-
-        try(Connection connection = getConnectionToTestDb()) {
-            String sql = "delete from \"user\"";
-
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.execute();
-        }
+        DatabaseTestUtil.clearUserTable();
     }
 
-    private Connection getConnectionToTestDb() throws SQLException {
-        return DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres?currentSchema=bsa_test", "postgres", "TroelsDatabase");
-    }
+
 
 //    @Test
 //    public void testJdbcConnection() throws SQLException {
@@ -65,7 +57,7 @@ public class UserDAOtests {
         userDAO.create(user);
 
         // assert
-        try (Connection connection = getConnectionToTestDb()) {
+        try (Connection connection = DatabaseTestUtil.getConnectionToTestDb()) {
             String sql = "select * from \"user\";";
 
             PreparedStatement statement = connection.prepareStatement(sql);
