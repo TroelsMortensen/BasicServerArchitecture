@@ -2,7 +2,7 @@ package bsa.models;
 
 import java.util.UUID;
 
-public class User {
+public class User implements Entity{
     private UUID id;
     private String username;
     private String password;

@@ -2,7 +2,7 @@ package bsa.models;
 
 import java.util.UUID;
 
-public class Task {
+public class Task implements Entity{
     private UUID id;
     private String title;
 

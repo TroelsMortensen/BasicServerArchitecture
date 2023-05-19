@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import server.bsa.servicetests.userservice.MockDAOs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +20,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TaskServiceTests {
 
     private TaskService taskService;
-    private TaskMockDAO taskDAO;
+    private MockDAOs.TaskMockDAO taskDAO;
 
     @BeforeEach
     public void setup() {
-        taskDAO = new TaskMockDAO();
+        taskDAO = new MockDAOs.TaskMockDAO();
         taskService = new TaskServiceImpl(taskDAO);
     }
 
@@ -40,7 +41,7 @@ public class TaskServiceTests {
         // act
         taskService.create(title);
         // assert
-        Task createdTask = taskDAO.savedTasks.get(0);
+        Task createdTask = taskDAO.savedEntities.get(0);
         assertEquals(title, createdTask.getTitle());
     }
 
@@ -70,14 +71,14 @@ public class TaskServiceTests {
         // arrange
         UUID existingTaskId = UUID.randomUUID();
         Task task = new Task(existingTaskId, "As a dev, I want coffee");
-        taskDAO.savedTasks = new ArrayList<>(List.of(task));
+        taskDAO.savedEntities = new ArrayList<>(List.of(task));
 
         // act
 
         taskService.updateTitle(existingTaskId, title);
 
         // assert
-        Task updatedTask = taskDAO.savedTasks.get(0);
+        Task updatedTask = taskDAO.savedEntities.get(0);
         assertEquals(title, updatedTask.getTitle());
     }
 

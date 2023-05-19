@@ -19,12 +19,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTests {
 
-    private UserMockDAO userDAO;
+    private MockDAOs.UserMockDAO userDAO;
     private UserService userService;
 
     @BeforeEach
     public void createUserServiceAndDao() {
-        userDAO = new UserMockDAO();
+        userDAO = new MockDAOs.UserMockDAO();
         userService = new UserServiceImpl(userDAO);
     }
 
@@ -41,7 +41,7 @@ class UserServiceTests {
 
     @Test
     public void should_instantiate_concrete_service_with_dao_impl() {
-        UserDAO userDAO = new UserMockDAO();
+        UserDAO userDAO = new MockDAOs.UserMockDAO();
         UserService userService = new UserServiceImpl(userDAO);
     }
 
@@ -55,7 +55,7 @@ class UserServiceTests {
         userService.create(actualUsername, actualPassword);
 
         // assert
-        User user = userDAO.getFirstUser();
+        User user = userDAO.savedEntities.get(0);
         assertAll(
                 "Grouped assertions",
                 () -> assertEquals(actualUsername, user.getUserName()),
@@ -68,7 +68,7 @@ class UserServiceTests {
         String actualUsername = "abc"; // between [3, 15] characters
 
         userService.create(actualUsername, "Password!2");
-        User user = userDAO.getFirstUser();
+        User user = userDAO.savedEntities.get(0);
         assertEquals(actualUsername, user.getUserName());
     }
 
@@ -77,7 +77,7 @@ class UserServiceTests {
     public void should_create_user_with_valid_username2(String actualUsername) {
 
         userService.create(actualUsername, "Password!2");
-        User user = userDAO.getFirstUser();
+        User user = userDAO.savedEntities.get(0);
         assertEquals(actualUsername, user.getUserName());
     }
 
@@ -107,14 +107,14 @@ class UserServiceTests {
         // arrange
         UUID id = UUID.randomUUID();
         String currentPassword = "Password!2";
-        userDAO.savedUsers = new ArrayList<>(List.of(new User(id, "Username", currentPassword)));
+        userDAO.savedEntities = new ArrayList<>(List.of(new User(id, "Username", currentPassword)));
 
         // act
         String updatedPassword = "PazSw0rd!2";
         userService.updatePassword(id, updatedPassword, currentPassword);
 
         // assert
-        User savedUser = userDAO.getFirstUser();
+        User savedUser = userDAO.savedEntities.get(0);
         assertEquals(updatedPassword, savedUser.getPassword());
     }
 
@@ -122,14 +122,14 @@ class UserServiceTests {
     public void should_update_username() {
         UUID id = UUID.randomUUID();
         String currentUsername = "Username";
-        userDAO.savedUsers = new ArrayList<>(List.of(new User(id, currentUsername, "Password")));
+        userDAO.savedEntities = new ArrayList<>(List.of(new User(id, currentUsername, "Password")));
 
         // act
         String newUsername = "OtherUsername";
         userService.updateUsername(id, newUsername);
 
         // assert
-        User savedUser = userDAO.getFirstUser();
+        User savedUser = userDAO.savedEntities.get(0);
         assertEquals(newUsername, savedUser.getUserName());
     }
 
@@ -141,7 +141,7 @@ class UserServiceTests {
 
         User actualUser = new User(id, "Username", "Password");
         User user2 = new User(UUID.randomUUID(), newUsername, "Password2");
-        userDAO.savedUsers = List.of(actualUser, user2);
+        userDAO.savedEntities = List.of(actualUser, user2);
 
         // act
         assertThrows(DomainLogicException.class, () -> {
@@ -155,7 +155,7 @@ class UserServiceTests {
         // arrange
         String existingUsername = "Username";
         User existingUser = new User(UUID.randomUUID(), existingUsername, "Password");
-        userDAO.savedUsers = List.of(existingUser);
+        userDAO.savedEntities = List.of(existingUser);
 
         // act
 
@@ -187,20 +187,20 @@ class UserServiceTests {
         // arrange
         UUID id = UUID.randomUUID();
         User userToDelete = new User(id, "Username", "Password!2");
-        userDAO.savedUsers = new ArrayList<>(List.of(userToDelete));
+        userDAO.savedEntities = new ArrayList<>(List.of(userToDelete));
 
         // act
         userService.delete(id);
 
         // assert
-        assertTrue(userDAO.savedUsers.isEmpty());
+        assertTrue(userDAO.savedEntities.isEmpty());
     }
 
     @Test
     public void should_throw_exception_when_deleting_notexisting_user(){
         UUID actualId = UUID.randomUUID();
         User userToDelete = new User(UUID.randomUUID(), "Username", "Password!2");
-        userDAO.savedUsers = new ArrayList<>(List.of(userToDelete));
+        userDAO.savedEntities = new ArrayList<>(List.of(userToDelete));
 
         // act
         assertThrows(DataAccessException.class, () ->{
