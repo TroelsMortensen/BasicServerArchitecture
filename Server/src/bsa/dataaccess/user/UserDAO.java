@@ -1,17 +1,10 @@
 package bsa.dataaccess.user;
 
+import bsa.dataaccess.DAO;
 import bsa.models.User;
 
 import java.util.UUID;
 
-public interface UserDAO {
-    void create(User user);
-
-    User find(UUID id);
-
-    void update(User user);
-
+public interface UserDAO extends DAO<User> {
     User findByUsername(String username);
-
-    void delete(UUID id);
 }

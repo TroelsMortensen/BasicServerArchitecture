@@ -1,5 +1,6 @@
 package server.bsa.servicetests;
 
+import bsa.dataaccess.DAO;
 import bsa.dataaccess.exceptions.DataAccessException;
 import bsa.models.Entity;
 import bsa.models.Task;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class GenericMockDAO<T extends Entity> {
+public abstract class GenericMockDAO<T extends Entity> implements DAO<T> {
 
     public List<T> savedEntities;
 
