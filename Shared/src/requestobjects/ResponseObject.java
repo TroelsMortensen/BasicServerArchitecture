@@ -1,6 +1,8 @@
 package requestobjects;
 
-public class ResponseObject {
+import java.io.Serializable;
+
+public class ResponseObject implements Serializable {
     private final String status;
     private final Object payload;
 

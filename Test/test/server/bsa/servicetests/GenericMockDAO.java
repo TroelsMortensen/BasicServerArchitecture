@@ -3,7 +3,6 @@ package server.bsa.servicetests;
 import bsa.dataaccess.DAO;
 import bsa.dataaccess.exceptions.DataAccessException;
 import bsa.models.Entity;
-import bsa.models.Task;
 
 import java.util.ArrayList;
 import java.util.List;

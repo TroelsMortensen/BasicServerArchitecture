@@ -1,7 +1,6 @@
 package bsa.dataaccess;
 
 import bsa.models.Entity;
-import bsa.models.Task;
 
 import java.util.UUID;
 
