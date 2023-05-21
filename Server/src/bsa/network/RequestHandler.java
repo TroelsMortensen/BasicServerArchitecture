@@ -1,16 +1,20 @@
 package bsa.network;
 
+import bsa.services.TaskService;
 import bsa.services.UserService;
-import requestobjects.CreateUserRequest;
+import requestobjects.task.CreateTaskRequest;
+import requestobjects.user.CreateUserRequest;
 import requestobjects.RequestObject;
-import requestobjects.UpdateUsernameRequest;
+import requestobjects.user.UpdateUsernameRequest;
 
 public class RequestHandler {
     private final UserService userService;
+    private final TaskService taskService;
 
-    public RequestHandler(UserService userService) {
+    public RequestHandler(UserService userService, TaskService taskService) {
 
         this.userService = userService;
+        this.taskService = taskService;
     }
 
     public Object handle(RequestObject requestObject) {
@@ -42,6 +46,12 @@ public class RequestHandler {
     }
 
     private Object handleTaskActions(String action, Object payload) {
-        return null;
+        switch (action){
+            case "create" : {
+                CreateTaskRequest request = (CreateTaskRequest) payload;
+                return taskService.create(request.getTitle());
+            }
+            default : throw new RuntimeException("Action '" + action + "' not recognized");
+        }
     }
 }

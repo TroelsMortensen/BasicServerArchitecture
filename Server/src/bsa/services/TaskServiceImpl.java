@@ -14,17 +14,19 @@ public class TaskServiceImpl implements TaskService{
     }
 
     @Override
-    public void create(String title) {
+    public UUID create(String title) {
         // load N/A
 
         //verify
         validateTitle(title);
 
         // modify
-        Task task = new Task(UUID.randomUUID(), title);
+        UUID id = UUID.randomUUID();
+        Task task = new Task(id, title);
 
         // save
         taskDAO.create(task);
+        return id;
     }
 
     @Override

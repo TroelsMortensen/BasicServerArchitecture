@@ -1,6 +1,6 @@
 package bsa.dummyclient;
 
-import requestobjects.CreateUserRequest;
+import requestobjects.user.CreateUserRequest;
 import requestobjects.RequestObject;
 import requestobjects.ResponseObject;
 

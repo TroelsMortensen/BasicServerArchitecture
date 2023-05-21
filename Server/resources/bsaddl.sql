@@ -18,3 +18,9 @@ ALTER TABLE "user"
 -- v3 add primary key constraint
 alter table "user"
 add primary key (id);
+
+-- v3
+create table task(
+    id uuid PRIMARY KEY,
+    title varchar
+);

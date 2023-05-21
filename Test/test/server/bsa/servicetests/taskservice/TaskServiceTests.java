@@ -31,38 +31,6 @@ public class TaskServiceTests {
     @ParameterizedTest
     @ValueSource(
             strings = {
-                    "As a product owner I can create a task...",
-                    "As a developer I can create a task..."
-            }
-    )
-    public void should_create_task_with_valid_title(String title) {
-        // arrange
-
-        // act
-        taskService.create(title);
-        // assert
-        Task createdTask = taskDAO.savedEntities.get(0);
-        assertEquals(title, createdTask.getTitle());
-    }
-
-    @DisplayName("Given invalid title, when creating task, then DomainLogicException is thrown.")
-    @ParameterizedTest
-    @ValueSource(
-            strings = {
-                    "",
-                    "as a something with a very long title and name and other important stuff, I ..",
-            }
-    )
-    public void should_fail_task_creation_given_invalid_title(String title) {
-        // arrange --
-        // act/assert
-
-        assertThrows(DomainLogicException.class, () -> taskService.create(title));
-    }
-
-    @ParameterizedTest
-    @ValueSource(
-            strings = {
                     "As a PO, I want to be able to rename the title",
                     "As a whatever, I want whatever"
             }

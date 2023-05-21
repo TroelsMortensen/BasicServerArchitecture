@@ -9,9 +9,9 @@ import bsa.services.UserServiceImpl;
 import bsa.services.exceptions.DomainLogicException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import requestobjects.CreateUserRequest;
+import requestobjects.user.CreateUserRequest;
 import requestobjects.RequestObject;
-import requestobjects.UpdateUsernameRequest;
+import requestobjects.user.UpdateUsernameRequest;
 import server.bsa.DatabaseTestUtil;
 
 import java.sql.SQLException;
@@ -27,7 +27,7 @@ public class ServerAcceptanceTestsForUser {
     public void setupEntireSystem() throws SQLException {
         userDAO = new UserPostgresDAO(DatabaseTestUtil.PGURI, DatabaseTestUtil.USERNAME, DatabaseTestUtil.PASSWORD);
         UserService userService = new UserServiceImpl(userDAO);
-        requestHandler = new RequestHandler(userService);
+        requestHandler = new RequestHandler(userService, null);
     }
 
     @BeforeEach

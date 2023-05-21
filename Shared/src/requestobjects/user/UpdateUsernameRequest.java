@@ -1,4 +1,4 @@
-package requestobjects;
+package requestobjects.user;
 
 import java.io.Serializable;
 import java.util.UUID;
